@@ -11,6 +11,24 @@ usersRouter.get('/', async (req, res) => {
 usersRouter.post('/', async (req, res) => {
   try {
     const body = req.body
+    if (body.username === undefined) {
+      return res.status(400).json({ error: 'Username is required' })
+    }
+    if (body.password === undefined) {
+      return res.status(400).json({ error: 'Password is required' })
+    }
+    if (body.username.length < 3) {
+      return res.status(400).json({ error: 'Username must be at least 3 characters long' })
+    }
+    if (body.password.length < 3) {
+      return res.status(400).json({ error: 'Password must be at least 3 characters long' })
+    }
+
+    const usersInDb = await User.find({ username: body.username })
+    const userInDb = usersInDb.find(u => u.username === body.username)
+    if (userInDb.username !== undefined && userInDb.username === body.username) {
+      return res.status(400).json({ error: 'Username must be unique' })
+    }
 
     const salt = await bcrypt.genSalt(10)
     const passwordHash = await bcrypt.hash(body.password, salt)
