@@ -11,6 +11,7 @@ usersRouter.get('/', async (req, res) => {
 usersRouter.post('/', async (req, res) => {
   try {
     const body = req.body
+
     if (body.username === undefined) {
       return res.status(400).json({ error: 'Username is required' })
     }
@@ -26,7 +27,8 @@ usersRouter.post('/', async (req, res) => {
 
     const usersInDb = await User.find({ username: body.username })
     const userInDb = usersInDb.find(u => u.username === body.username)
-    if (userInDb.username !== undefined && userInDb.username === body.username) {
+
+    if (userInDb !== undefined && userInDb.username === body.username) {
       return res.status(400).json({ error: 'Username must be unique' })
     }
 
